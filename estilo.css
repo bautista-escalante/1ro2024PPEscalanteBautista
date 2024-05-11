@@ -1,0 +1,76 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+    font-family:'Courier New', Courier, monospace;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: seagreen;
+    background: url("./fondoPantalla.png") no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+#tabla {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-collapse: separate;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    margin-left: 15%; /* Ajusta este valor según sea necesario */
+    background-color: #333333;
+}
+
+#tabla th,
+#tabla td {
+    border-bottom: 1px solid rgb(0, 0, 0); 
+    border-color: white;
+}
+
+
+th ,td, label, legend{
+    color: white;
+}
+
+#formulario{
+    border : "1"; 
+    border: 1px solid #333333;
+    border-collapse: separate;
+    box-shadow: 0 0 10px #333333;
+    width: 30%;   
+}
+
+#formulario div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; 
+    margin-bottom: 10px; 
+}
+
+#formulario label {
+    margin-right: 10px;
+    flex: 1; 
+    color:#333333;
+}
+button{
+    background-color: #333333;
+    font-size: 20px;
+    color: white;
+}
+#formulario div button {
+    margin: 0 auto;
+    display: block;
+    font-size: 16px; 
+    padding: 10px 20px;
+}
+
+#boton-agregar{
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    font-size: 16px; 
+    padding: 10px 20px;
+}

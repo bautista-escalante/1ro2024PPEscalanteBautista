@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>primer parcial labo III</title>
+    <link rel="stylesheet" href="./estilo.css">
+</head>
+<body>
+    <!---->
+    <div class="contenedor">
+        <label for="seleccionarOpciones" >Filtra por: </label>
+        <select id="seleccionarOpciones" onchange="Filtar()">
+            <option value ="todos">todos</option>
+            <option value="extrnajeros">extrnajeros</option>
+            <option value="ciudadanos">ciudadanos</option>
+        </select>
+        <label for="edadPromedio">edad promedio</label>
+        <input type="text" id="edadPromedio" readonly>
+        <button type="button" onclick="calcularEdadPromedio()">calcular</button>
+
+        <table id = "tabla" border="1">
+            <thead>
+                <tr>
+                    <th><button >Id</button></th>
+                    <th><button>Nombre</button></th>
+                    <th><button>Apellido</button></th>
+                    <th><button>>fecha de nacimiento</button></th>
+                    <th><button>DNI</button></th>
+                    <th><button>pais de origen</button></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id = "datos"></tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th><input type="checkbox" checked onchange="ocultar()">Id</th>
+                    <th><input type="checkbox" checked onchange="ocultar()">Nombre</th>
+                    <th><input type="checkbox" checked onchange="ocultar()">Apellido</th>
+                    <th><input type="checkbox" checked onchange="ocultar()">fecha de nacimiento</th>
+                    <th><input type="checkbox" checked onchange="ocultar()">DNI</th>
+                    <th><input type="checkbox" checked onchange="ocultar()">pais de origen</th>
+                </tr>
+            </tfoot>
+        </table>
+        <button onclick="mostrarForm()">agregar</button>
+        <button type="button" onclick="recuperarDatos()">actualizar datos</button>
+        <!--<button onclick=" recuperarDatos()">actualizar datos</button>-->
+        <div id="formulario"></div>
+    </div>
+    <script>
+        class Persona{
+            id;
+            nombre;
+            apellido;
+            fechaNacimiento;//ej 2000/01/01
+
+            constructor(id,nombre,apellido,fecha){
+                this.id = id;
+                this.nombre = nombre;
+                this.apellido = apellido;
+                this.fechaNacimiento = fecha;
+                var regexFecha = /^\d{4}-\d{2}-\d{2}$/;
+                if (!id) {
+                    throw new Error("El ID es obligatorio.");
+                }
+                else if (!nombre) {
+                    throw new Error("El nombre es obligatorio.");
+                }
+                else if (!apellido) {
+                    throw new Error("El apellido es obligatorio.");
+                }
+                else if (!/^\d{4}\d{2}\d{2}$/.test(fecha)) {
+                    throw new Error("error. formato de fecha incorrecto");
+                }
+            }
+            
+            toString(objeto) {
+                try {
+                    return jsonString = JSON.stringify(objeto);
+                }
+                catch (error) {
+                    console.error("Error al convertir a string:", error);
+                    return null;
+                }
+            }
+        }
+
+        class Ciudadano extends Persona{
+            dni;
+            constructor(id,nombre,apellido,fecha,dni){
+                super(id,nombre,apellido,fecha);
+                this.dni = dni;
+                if(!dni || dni < 0){
+                    throw new Error("el dni no puede ser negativo");
+                }
+            }
+            toString(obj){
+                super.toString(obj)
+            }
+        }
+
+        class Extranjero extends Persona{
+            paisOrigen;
+            constructor(id,nombre,apellido,fecha,paisOrigen){
+                super(id,nombre,apellido,fecha);
+                this.paisOrigen = paisOrigen;
+                if(!paisOrigen){
+                    throw new Error("error. el pais de origen es oblegatorio")
+                }
+            }
+            toString(obj){
+                super.toString(obj)
+            }
+        }
+
+            const jsonstring = `[{"id":1,"apellido":"Serrano","nombre":"Horacio","fechaNacimiento":19840103,"dni":45876942},
+    {"id":2,"apellido":"Casas","nombre":"Julian","fechaNacimiento":19990723,"dni":98536214},
+    {"id":3,"apellido":"Galeano","nombre":"Julieta","fechaNacimiento":20081103,"dni":74859612},
+    {"id":4,"apellido":"Molina","nombre":"Juana","fechaNacimiento":19681201,"paisOrigen":"Paraguay"},
+    {"id":5,"apellido":"Barrichello","nombre":"Rubens","fechaNacimiento":19720523,"paisOrigen":"Brazil"},
+    {"id":6,"apellido":"Hkkinen","nombre":"Mika","fechaNacimiento":19680928,"paisOrigen":"Finlandia"}]`;
+    var json = JSON.parse(jsonstring);
+
+    function crearArray() {
+        let personas = [];
+        for (var i = 0; i < json.length; i++) {
+            var item = json[i];
+            if (item.dni !== undefined) {
+                personas.push(new Ciudadano(
+                    item.id,
+                    item.nombre,
+                    item.apellido,
+                    item.fechaNacimiento,
+                    item.dni
+                ));
+            } else {
+                personas.push(new Extranjero(
+                    item.id,
+                    item.nombre,
+                    item.apellido,
+                    item.fechaNacimiento,
+                    item.paisOrigen
+                ));
+            }
+        }
+        return personas;
+    }
+      
+    function cargarDatos(nuevos = [], imprimir = false){
+        let tabla = document.getElementById("tabla"); 
+        if(!imprimir){
+        let arrayPersonas = crearArray();
+            for(let i =0; i<arrayPersonas.length; i++){
+                const fila = document.createElement("tr");
+                fila.innerHTML = 
+                    `<td>${arrayPersonas[i].id || ""}</td>
+                    <td>${arrayPersonas[i].nombre|| ""}</td>
+                    <td>${arrayPersonas[i].apellido|| ""}</td>
+                    <td>${arrayPersonas[i].fechaNacimiento|| ""}</td>
+                    <td>${arrayPersonas[i].paisOrigen|| ""}</td>
+                    <td>${arrayPersonas[i].dni|| ""}</td>`;
+                    tabla.appendChild(fila);
+                }
+            }
+        else{
+            for(let i = 0; i<nuevos.length; i++){
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = 
+                    `<td>${nuevos[i].id || ""}</td>
+                    <td>${nuevos[i].nombre|| ""}</td>
+                    <td>${nuevos[i].apellido|| ""}</td>
+                    <td>${nuevos[i].fechaNacimiento|| ""}</td>
+                    <td>${nuevos[i].paisOrigen|| ""}</td>
+                    <td>${nuevos[i].dni|| ""}</td>`;
+                    tabla.appendChild(fila);
+                }
+            }
+        }
+       
+        cargarDatos()
+
+        function calcularEdadPromedio(){
+            var edades=[];
+            for(let i = 0; i < json.length; i++){
+                let fechaNacimiento = json[i].fechaNacimiento.toString(); 
+                let años = /^\d{2}/.exec(fechaNacimiento)[0];
+                edades.push(parseInt(años));
+            }
+            const sumaEdades = edades.reduce((acumulador, edad) => acumulador + edad, 0);
+            document.getElementById("edadPromedio").value = sumaEdades / json.length;
+        }
+
+        function Filtar(){
+            let combobox = document.getElementById("seleccionarOpciones").value 
+            let personas = crearArray();
+            document.getElementById("tabla").innerHTML = '';
+            switch(combobox){
+                case "todos":
+                    cargarDatos()
+                    break;
+                case "extrnajeros":
+                    const extrnajeros = personas.filter(persona => persona instanceof Extranjero);
+                    cargarDatos(extrnajeros, true);
+                    break;
+                case "ciudadanos":
+                    const ciudadanos = personas.filter(persona => persona instanceof Ciudadano);
+                    cargarDatos(ciudadanos, true);
+                    break;
+            }
+        }
+    
+        function mostrarForm(){
+            document.getElementById("formulario").innerHTML=`
+                <div>
+                    <label for="id">id: </label>
+                    <input type="number" id="id" name="id" readonly>
+                </div>
+                <div>
+                    <label for="nombre">nombre: </label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div>
+                    <label for="apellido">apellido: </label>
+                    <input type="text" id="apellido" name="apellido" required>
+                    </div>
+                <div>
+                    <label for="edad">fecha de nacimiento: </label>
+                    <input type="number" id="edad" name="edad" required>
+                </div>
+                <label for="dni">dni: </label>
+                <input id="dni" type="text" name="dni">
+                </div>
+                <div>
+                    <label for="paisOrigen">pais de origen: </label>
+                    <input id="paisOrigen" type="number" name="paisOrigen">
+                    </div>
+                    <div>
+                    <select id="tipo" onchange="mostrarInput()">
+                    <option value ="">elige el tipo</option>
+                    <option value="extrnajeros">extrnajeros</option>
+                    <option value="ciudadanos">ciudadanos</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" id="enviarBtn">enviar</button>
+                </div>`;
+                document.getElementById("datos").addEventListener("submit", function(event) {
+                event.preventDefault();
+                recuperarDatos();
+                });
+        }
+        
+        function generarId(){
+           let i =1;
+           while(i<json.length){
+                i++;
+           }
+           document.getElementById("id").value = i;
+        }
+
+        function ocultar(){
+            let personas = crearArray();
+            const checkboxes = document.querySelectorAll("input[type='checkbox']");
+            let valor = null;
+            for(let i = 0; i < checkboxes.length; i++){
+                if(!checkboxes[i].checked){
+                    valor = checkboxes[i].parentNode.textContent.trim();
+                    console.log(valor)
+                    break;
+                }
+            }
+            document.getElementById("tabla").innerHTML = '';
+            let nuevoArray=[]
+            switch(valor){
+                case "Id":
+                    personas = personas.map(function(persona) {
+                        delete persona.id;
+                        nuevoArray.push(persona);
+                    });
+            break;
+                case "Nombre":
+                    personas = personas.map(function(persona) {
+                        delete persona.nombre;
+                        nuevoArray.push(persona);
+                    });
+                    break;
+                    case "Apellido":
+                    personas = personas.map(function(persona) {
+                        delete persona.apellido;
+                    nuevoArray.push(persona);
+                });
+                    break;
+                case "edad":
+                    personas = personas.map(function(persona) {
+                    delete persona.fechaNacimiento;
+                    nuevoArray.push(persona);
+                });
+                    break;
+                case "dni":
+                    personas = personas.map(function(persona) {
+                    delete persona.dni;
+                    nuevoArray.push(persona);
+                });
+            }
+            cargarDatos(nuevoArray,true);
+        }
+
+        function guardarDatos() {
+            let json = ObtenerDatos();
+            console.log(json);
+            localStorage.setItem('datosFormulario', JSON.stringify(json));
+        }
+       
+        function recuperarDatos() {
+        var datos = localStorage.getItem('datosFormulario');
+            if (datos) {
+                datos = JSON.parse(datos);
+                console.log(datos);
+                if (datos.length > 0) {
+                    cargarDatos(datos, true);
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
